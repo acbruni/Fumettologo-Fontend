@@ -88,9 +88,17 @@ class _CarrelloState extends State<Carrello> {
           ),
         ),
       ),
-      body: isLogged
-          ? buildLoggedInView()
-          : buildLoggedOutView(),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'images/background.png', // Percorso dell'immagine di sfondo
+              fit: BoxFit.cover,
+            ),
+          ),
+          isLogged ? buildLoggedInView() : buildLoggedOutView(),
+        ],
+      ),
     );
   }
 

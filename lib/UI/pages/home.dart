@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fumettologo_frontend/UI/pages/ordini_utente.dart';
 import 'package:fumettologo_frontend/UI/pages/registrazione.dart';
@@ -20,11 +21,28 @@ class _HomeState extends State<Home> {
   int itemsPerPage = 5;
   TextEditingController titleController = TextEditingController();
   bool isLoading = true;
+  PageController _pageController = PageController();
+  int _currentPage = 0;
 
   @override
   void initState() {
     super.initState();
     fetchComics();
+    // Start the auto scrolling
+    Timer.periodic(Duration(seconds: 5), (Timer timer) {
+      if (_currentPage < 2) {
+        _currentPage++;
+      } else {
+        _currentPage = 0;
+      }
+      if (_pageController.hasClients) {
+        _pageController.animateToPage(
+          _currentPage,
+          duration: Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
   }
 
   Future<void> fetchComics() async {
@@ -39,38 +57,15 @@ class _HomeState extends State<Home> {
     }
   }
 
-  void previousPage() async {
-    if (currentPage > 0) {
-      final List<Comic> retrievedComics;
-      if (titleController.text == '') {
-        retrievedComics =
-        await Model.sharedInstance.getComics(pageNumber: currentPage - 1);
-      } else {
-        retrievedComics = await Model.sharedInstance.getComicsByTitle(
-            titleController.text, pageNumber: currentPage - 1);
-      }
-      setState(() {
-        currentPage -= 1;
-        comics = retrievedComics;
-      });
-    }
-  }
-
-  void nextPage() async {
-    final List<Comic> retrievedComics;
-    if (titleController.text == '') {
-      retrievedComics =
-      await Model.sharedInstance.getComics(pageNumber: currentPage + 1);
-    } else {
-      retrievedComics = await Model.sharedInstance.getComicsByTitle(
-          titleController.text, pageNumber: currentPage + 1);
-    }
-    if (retrievedComics.isNotEmpty) {
-      setState(() {
-        currentPage += 1;
-        comics = retrievedComics;
-      });
-    }
+  void _selectPage(int index) {
+    setState(() {
+      _currentPage = index;
+      _pageController.animateToPage(
+        index,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    });
   }
 
   @override
@@ -78,7 +73,6 @@ class _HomeState extends State<Home> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: Color.fromRGBO(220, 220, 220, 1.0),
         appBar: AppBar(
           backgroundColor: Color.fromRGBO(25, 25, 112, 1.0),
           title: const Text(
@@ -146,9 +140,18 @@ class _HomeState extends State<Home> {
           ],
         ),
         body: isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? Center(child: CircularProgressIndicator())
             : Stack(
           children: [
+            Positioned.fill(
+              child: Container(
+                color: Color.fromRGBO(220, 220, 220, 0.7), // Background Color
+                child: Image.asset(
+                  'images/background.png',
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
             Column(
               children: <Widget>[
                 SizedBox(
@@ -178,14 +181,14 @@ class _HomeState extends State<Home> {
                             icon: Icon(Icons.clear),
                             onPressed: () {
                               titleController.clear();
-                              // Quando il campo di testo viene cancellato, torna alla home
                               fetchComics();
                             },
                           ),
                           suffixIcon: IconButton(
                             icon: Icon(Icons.search_rounded),
                             onPressed: () async {
-                              String searchTitle = titleController.text;
+                              String searchTitle =
+                                  titleController.text;
                               List<Comic> searchResults =
                               await Model.sharedInstance
                                   .getComicsByTitle(searchTitle);
@@ -203,9 +206,67 @@ class _HomeState extends State<Home> {
                 SizedBox(
                   width: 1100,
                   height: 320,
-                  child: Image.asset(
-                    'assets/images/news.jpg',
-                    fit: BoxFit.cover,
+                  child: Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      PageView.builder(
+                        controller: _pageController,
+                        onPageChanged: (int page) {
+                          setState(() {
+                            _currentPage = page;
+                          });
+                        },
+                        itemBuilder: (context, index) {
+                          return Container(
+                            margin: EdgeInsets.all(8.0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  spreadRadius: 1,
+                                  blurRadius: 3,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10.0),
+                              child: Image.asset(
+                                index == 0
+                                    ? 'images/news.jpg'
+                                    : index == 1
+                                    ? 'images/news3.jpg'
+                                    : 'images/news4.jpg',
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          );
+                        },
+                        itemCount: 3,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List<Widget>.generate(3, (int index) {
+                          return GestureDetector(
+                            onTap: () {
+                              _selectPage(index);
+                            },
+                            child: Container(
+                              margin: EdgeInsets.symmetric(horizontal: 2.0),
+                              width: 8.0,
+                              height: 8.0,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: index == _currentPage
+                                    ? Colors.blue
+                                    : Colors.grey,
+                              ),
+                            ),
+                          );
+                        }),
+                      ),
+                    ],
                   ),
                 ),
                 Expanded(
@@ -231,12 +292,26 @@ class _HomeState extends State<Home> {
                   children: [
                     IconButton(
                       icon: Icon(Icons.arrow_back),
-                      onPressed: previousPage,
+                      onPressed: () {
+                        if (_currentPage > 0) {
+                          _pageController.previousPage(
+                            duration: Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        }
+                      },
                     ),
-                    Text('Pagina ${currentPage + 1}'),
+                    Text('Pagina ${_currentPage + 1}'),
                     IconButton(
                       icon: Icon(Icons.arrow_forward),
-                      onPressed: nextPage,
+                      onPressed: () {
+                        if (_currentPage < 2) {
+                          _pageController.nextPage(
+                            duration: Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        }
+                      },
                     ),
                   ],
                 ),

@@ -102,220 +102,236 @@ class _LoginState extends State<Login> {
           ),
         ],
       ),
-      body: Container(
-        color: Color.fromRGBO(220, 220, 220, 1.0),
-        child: !isLogged
-            ? Center(
-          child: Padding(
-            padding: const EdgeInsets.all(50.0),
-            child: Container(
-              width: 400,
-              height: 500,
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Color.fromRGBO(25, 25, 112, 1.0),
-                  width: 2.0,
-                ),
-                color: Color.fromRGBO(245, 245, 220, 1.0),
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Fumettologo",
-                    style: TextStyle(
-                      fontFamily: "Serif",
-                      fontSize: 54.0,
-                      fontWeight: FontWeight.bold,
-                      color: Color.fromRGBO(25, 25, 112, 1.0),
+      body: Stack(
+        children: [
+          // Background Image
+          Positioned.fill(
+            child: Image.asset(
+              'images/background.png',
+              fit: BoxFit.cover,
+            ),
+          ),
+          // Content
+          Container(
+            color: Colors.transparent,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(50.0),
+                child: !isLogged
+                    ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(50.0),
+                    child: Container(
+                      width: 400,
+                      height: 500,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Color.fromRGBO(25, 25, 112, 1.0),
+                          width: 2.0,
+                        ),
+                        color: Color.fromRGBO(245, 245, 220, 1.0),
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "Fumettologo",
+                            style: TextStyle(
+                              fontFamily: "Serif",
+                              fontSize: 54.0,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromRGBO(25, 25, 112, 1.0),
+                            ),
+                          ),
+                          const SizedBox(height: 45),
+                          Stack(
+                            children: [
+                              SizedBox(
+                                width: 325,
+                                child: TextField(
+                                  controller: emailController,
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'Email',
+                                    hintText: 'Email',
+                                    prefixIcon: Icon(Icons.person),
+                                    fillColor: Colors.white70,
+                                    filled: true,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 15),
+                          SizedBox(
+                            width: 325,
+                            child: TextField(
+                              controller: passwordController,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'Password',
+                                hintText: 'Password',
+                                fillColor: Colors.white70,
+                                filled: true,
+                                prefixIcon: Icon(Icons.lock),
+                                suffixIcon: IconButton(
+                                  icon: Icon(isPasswordVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off),
+                                  onPressed: () {
+                                    setState(() {
+                                      isPasswordVisible = !isPasswordVisible;
+                                    });
+                                  },
+                                ),
+                              ),
+                              obscureText: !isPasswordVisible,
+                            ),
+                          ),
+                          const SizedBox(height: 40),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color.fromRGBO(25, 25, 112, 1.0),
+                            ),
+                            onPressed: () {
+                              handleLogin((LoginResult result) {
+                                switch (result) {
+                                  case LoginResult.logged:
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Login effettuato con successo'),
+                                        ));
+                                    fetchUser();
+                                    setState(() {
+                                      isLogged = true;
+                                    });
+                                    break;
+                                  case LoginResult.wrongCredentials:
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Credenziali errate. Riprova.'),
+                                        ));
+                                    break;
+                                  case LoginResult.unknownError:
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                              'Si è verificato un errore. Riprova più tardi.'),
+                                        ));
+                                    break;
+                                }
+                              });
+                            },
+                            child: const Text(
+                              "Accedi",
+                              style: TextStyle(color: Colors.white70),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 45),
-                  Stack(
-                    children: [
-                      SizedBox(
-                        width: 325,
-                        child: TextField(
-                          controller: emailController,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Email',
-                            hintText: 'Email',
-                            prefixIcon: Icon(Icons.person),
-                            fillColor: Colors.white70,
-                            filled: true,
+                )
+                    : Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(50.0),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 20),
+                        Text(
+                          'I tuoi dati personali',
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 20),
+                        Card(
+                          elevation: 2.0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ListTile(
+                                leading: Icon(Icons.person, color: Colors.blue),
+                                title: Text(
+                                  'Nome e cognome',
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                                subtitle: Text(
+                                  '${user?.firstName ?? ''} ${user?.lastName ?? ''}',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                              ),
+                              ListTile(
+                                leading: Icon(Icons.email, color: Colors.blue),
+                                title: Text(
+                                  'Email',
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                                subtitle: Text(
+                                  '${user?.email ?? ''}',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                              ),
+                              ListTile(
+                                leading: Icon(Icons.phone, color: Colors.blue),
+                                title: Text(
+                                  'Cellulare',
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                                subtitle: Text(
+                                  '${user?.phone ?? ''}',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                              ),
+                              ListTile(
+                                leading: Icon(Icons.location_on, color: Colors.blue),
+                                title: Text(
+                                  'Indirizzo',
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                                subtitle: Text(
+                                  '${user?.address ?? ''}',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 15),
-                  SizedBox(
-                    width: 325,
-                    child: TextField(
-                      controller: passwordController,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Password',
-                        hintText: 'Password',
-                        fillColor: Colors.white70,
-                        filled: true,
-                        prefixIcon: Icon(Icons.lock),
-                        suffixIcon: IconButton(
-                          icon: Icon(isPasswordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off),
-                          onPressed: () {
-                            setState(() {
-                              isPasswordVisible = !isPasswordVisible;
-                            });
+                        SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () async {
+                            bool loggedOut = await Model.sharedInstance.logOut();
+                            if (loggedOut) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Logout effettuato con successo'),
+                                ),
+                              );
+                              handleLogout();
+                            } else {
+                              showErrorDialog(context, "Impossibile effettuare il logout. Riprova.");
+                            }
                           },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color.fromRGBO(25, 25, 112, 1.0),
+                          ),
+                          child: const Text(
+                            'Esci',
+                            style: TextStyle(
+                              color: Colors.white70,
+                            ),
+                          ),
                         ),
-                      ),
-                      obscureText: !isPasswordVisible,
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 40),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromRGBO(25, 25, 112, 1.0),
-                    ),
-                    onPressed: () {
-                      handleLogin((LoginResult result) {
-                        switch (result) {
-                          case LoginResult.logged:
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(const SnackBar(
-                              content: Text('Login effettuato con successo'),
-                            ));
-                            fetchUser();
-                            setState(() {
-                              isLogged = true;
-                            });
-                            break;
-                          case LoginResult.wrongCredentials:
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(const SnackBar(
-                              content: Text('Credenziali errate. Riprova.'),
-                            ));
-                            break;
-                          case LoginResult.unknownError:
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(const SnackBar(
-                              content: Text(
-                                  'Si è verificato un errore. Riprova più tardi.'),
-                            ));
-                            break;
-                        }
-                      });
-                    },
-                    child: const Text(
-                      "Accedi",
-                      style: TextStyle(color: Colors.white70),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
-        )
-            : Center(
-          child: Padding(
-            padding: const EdgeInsets.all(50.0),
-            child: Column(
-              children: [
-                SizedBox(height: 20),
-                Text(
-                  'I tuoi dati personali',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 20),
-                Card(
-                  elevation: 2.0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ListTile(
-                        leading: Icon(Icons.person, color: Colors.blue),
-                        title: Text(
-                          'Nome e cognome',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        subtitle: Text(
-                          '${user?.firstName ?? ''} ${user?.lastName ?? ''}',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                      ListTile(
-                        leading: Icon(Icons.email, color: Colors.blue),
-                        title: Text(
-                          'Email',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        subtitle: Text(
-                          '${user?.email ?? ''}',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                      ListTile(
-                        leading: Icon(Icons.phone, color: Colors.blue),
-                        title: Text(
-                          'Cellulare',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        subtitle: Text(
-                          '${user?.phone ?? ''}',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                      ListTile(
-                        leading: Icon(Icons.location_on, color: Colors.blue),
-                        title: Text(
-                          'Indirizzo',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        subtitle: Text(
-                          '${user?.address ?? ''}',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () async {
-                    bool loggedOut = await Model.sharedInstance.logOut();
-                    if (loggedOut) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Logout effettuato con successo'),
-                        ),
-                      );
-                      handleLogout();
-                    } else {
-                      showErrorDialog(
-                          context, "Impossibile effettuare il logout. Riprova.");
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromRGBO(25, 25, 112, 1.0),
-                  ),
-                  child: const Text(
-                    'Esci',
-                    style: TextStyle(
-                      color: Colors.white70,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+        ],
       ),
     );
   }
