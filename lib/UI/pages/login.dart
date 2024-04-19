@@ -104,6 +104,9 @@ class _LoginState extends State<Login> {
       ),
       body: Stack(
         children: [
+          Container(
+            color: Color.fromRGBO(220, 220, 220, 1.0),
+          ),
           // Background Image
           Positioned.fill(
             child: Image.asset(

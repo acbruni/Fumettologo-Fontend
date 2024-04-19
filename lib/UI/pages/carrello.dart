@@ -90,6 +90,9 @@ class _CarrelloState extends State<Carrello> {
       ),
       body: Stack(
         children: [
+          Container(
+            color: Color.fromRGBO(220, 220, 220, 1.0),
+          ),
           Positioned.fill(
             child: Image.asset(
               'images/background.png', // Percorso dell'immagine di sfondo
