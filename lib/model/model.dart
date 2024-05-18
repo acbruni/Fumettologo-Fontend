@@ -133,6 +133,7 @@ class Model {
     final Uri uri = Uri.parse('${Constants
         .addressStoreServer}/comic?pageNumber=$pageNumber&pageSize=$pageSize&sortBy=$sortBy');
     try {
+      // effettua la richiesta GET per recuperare la lista di fumetti
       final response = await http.get(uri);
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
@@ -152,6 +153,7 @@ class Model {
   Future<List<Comic>> getComicsByTitle(String title, {int pageNumber = 0, int pageSize = 5, String sortBy = 'id'}) async {
     final Uri uri = Uri.parse('${Constants.addressStoreServer}/comic/title?title=$title&pageNumber=$pageNumber&pageSize=$pageSize&sortBy=$sortBy');
     try {
+      // effettua la richiesta GET per recuperare la lista dei fumetti filtrati per titolo
       final response = await http.get(uri);
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
@@ -186,6 +188,7 @@ class Model {
         '${Constants.addressStoreServer}/comic/filter').replace(
         queryParameters: queryParams);
     try {
+      // richiesta GET
       final response = await http.get(uri);
       print(response);
       if (response.statusCode == 200) {
@@ -207,6 +210,7 @@ class Model {
   Future<User> fetchUserProfile() async {
     final url = Uri.parse('${Constants.addressStoreServer}/profile');
     try {
+      // richiesta GET
       final response = await http.get(
         url,
         headers: {
@@ -231,6 +235,7 @@ class Model {
   Future<List<Order>> getUserOrders() async {
     final url = Uri.parse('${Constants.addressStoreServer}/profile/orders');
     try {
+      // richiesta GET
       final response = await http.get(
         url,
         headers: {
@@ -257,6 +262,7 @@ class Model {
   Future<List<CartDetail>> getCartDetails() async {
     final url = Uri.parse('${Constants.addressStoreServer}/profile/cart');
     try {
+      // richiesta GET
       final response = await http.get(
         url,
         headers: {
@@ -281,6 +287,7 @@ class Model {
   Future<void> clearCart() async {
     final url = Uri.parse('${Constants.addressStoreServer}/profile/cart');
     try {
+      // DELETE
       final response = await http.delete(
         url,
         headers: {
@@ -322,6 +329,7 @@ class Model {
       'quantity': quantity.toString(),
     };
     try {
+      // PUT
       final response = await http.put(
         url,
         headers: {
