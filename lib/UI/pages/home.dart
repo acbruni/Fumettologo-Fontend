@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:fumettologo_frontend/UI/pages/ordini_utente.dart';
 import 'package:fumettologo_frontend/UI/pages/registrazione.dart';
+import '../widgets/comic_card.dart';
 import 'carrello.dart';
+import 'filtro.dart';
 import 'login.dart';
 import '../../model/model.dart';
 import '../../model/objects/comic.dart';
-import '../widgets/comic_card.dart';
 import '../widgets/scroll.dart';
 
 class Home extends StatefulWidget {
@@ -100,13 +100,35 @@ class _HomeState extends State<Home> {
         backgroundColor: Color.fromRGBO(220, 220, 220, 1.0),
         appBar: AppBar(
           backgroundColor: Color.fromRGBO(25, 25, 112, 1.0),
-          title: const Text(
-            'Il Fumettologo',
-            style: TextStyle(
-              fontFamily: 'Serif',
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
+          leading: Tooltip(
+            message: 'Filtra',
+            child: IconButton(
+              icon: Icon(Icons.filter_list),
               color: Colors.white70,
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Center(
+                      child: Container(
+                        width: 700,
+                        height: 700,
+                        padding: EdgeInsets.all(16.0),
+                        child: FilterPage(),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+          title: const Text(
+              'Fumettologo',
+                style: TextStyle(
+                  fontFamily: 'Serif',
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white70,
             ),
           ),
           actions: [
@@ -145,19 +167,6 @@ class _HomeState extends State<Home> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => Carrello()),
-                  );
-                },
-              ),
-            ),
-            Tooltip(
-              message: 'Ordini',
-              child: IconButton(
-                icon: Icon(Icons.shopping_bag_outlined),
-                color: Colors.white70,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => OrdiniUtente()),
                   );
                 },
               ),

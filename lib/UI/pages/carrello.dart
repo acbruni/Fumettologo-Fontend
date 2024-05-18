@@ -4,6 +4,7 @@ import '../../model/model.dart';
 import '../../model/objects/cart_detail.dart';
 import '../../model/objects/user.dart';
 import '../widgets/error_dialog.dart';
+import '../widgets/logout.dart'; // Importa il widget BuildLoggedOut
 
 class Carrello extends StatefulWidget {
   const Carrello({Key? key}) : super(key: key);
@@ -99,7 +100,7 @@ class _CarrelloState extends State<Carrello> {
               fit: BoxFit.cover,
             ),
           ),
-          isLogged ? buildLoggedInView() : buildLoggedOutView(),
+          isLogged ? buildLoggedInView() : BuildLoggedOut(), // Aggiunta del widget BuildLoggedOut
         ],
       ),
     );
@@ -212,13 +213,13 @@ class _CarrelloState extends State<Carrello> {
           ),
         ),
         Container(
-          width: 300, // Width increased
+          width: 300,
           color: Colors.grey.shade200,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
                 child: Text(
                   'Riepilogo Carrello',
                   style: TextStyle(
@@ -229,7 +230,7 @@ class _CarrelloState extends State<Carrello> {
                   ),
                 ),
               ),
-              Divider(), // Divider added
+              Divider(),
               Expanded(
                 child: ListView.builder(
                   itemCount: cartDetails.length,
@@ -253,7 +254,7 @@ class _CarrelloState extends State<Carrello> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'Importo totale: ${calculateTotalPrice().toStringAsFixed(2)}€',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 18,
                     fontFamily: 'Serif',
                     fontWeight: FontWeight.bold,
@@ -330,34 +331,6 @@ class _CarrelloState extends State<Carrello> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget buildLoggedOutView() {
-    return Center(
-      child: Container(
-        padding: EdgeInsets.all(20.0),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.blue.shade900, width: 2.0),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.warning,
-              color: Colors.blue.shade900,
-            ),
-            SizedBox(width: 10.0),
-            Text(
-              "Effettua il login per accedere al carrello",
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.blue.shade900,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

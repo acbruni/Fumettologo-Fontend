@@ -13,13 +13,17 @@ import 'objects/user.dart';
 
 class Model {
   static Model sharedInstance = Model();
-  AuthenticationData? _authenticationData;
-  String? _token;
+  AuthenticationData? _authenticationData; // dati autenticazione dell'utente
+  String? _token; // token di accesso
 
+  // metodo per registrare un nuovo utente
   Future<void> register(RegistrationRequest registrationRequest) async {
+    // URL per la registrazione
     const String url = "${Constants.addressStoreServer}/register";
+    // converte la richiesta di registrazione in formato JSON
     final Map<String, dynamic> requestBody = registrationRequest.toJson();
     try {
+      // effettua la richiesta POST
       final response = await http.post(
         Uri.parse(url),
         headers: <String, String>{
@@ -27,6 +31,7 @@ class Model {
         },
         body: jsonEncode(requestBody),
       );
+      // verifica lo stato della risposta
       if (response.statusCode != 201) {
         throw Exception(response.body);
       }
@@ -35,22 +40,27 @@ class Model {
     }
   }
 
+  // metodo per effettuare l'accesso
   Future<LoginResult> login(String email, String password) async {
+    // corpo della richiesta per il login
     final Map<String, String> body = {
       'grant_type': 'password',
       'client_id': Constants.clientId,
       'username': email,
       'password': password
     };
+    // effettua la richiesta POST
     final response = await http.post(
       Uri.parse(Constants.addressAuthenticationServer+Constants.requestLogin),
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
     );
+    // verifica dello stato della risposta
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
       _authenticationData = AuthenticationData.fromJson(data);
       _token = _authenticationData!.accessToken;
+      // imposta un timer per aggiornare il token
       Timer.periodic(
           Duration(seconds: (_authenticationData!.expiresIn - 60)), (
           Timer t) {
@@ -66,22 +76,26 @@ class Model {
     }
   }
 
+  // metodo per verificare se l'utente è loggato
   bool isLogged() {
     return _token != null;
   }
 
+  // metodo per aggiornare il token di atuenticazione
   Future<bool> _refreshToken() async {
     try {
+      // corpo della richiesta per aggiornare il token
       Map<String, String> body = {
         'grant_type': 'refresh_token',
         'client_id': Constants.clientId,
         'refresh_token': _authenticationData!.refreshToken
       };
+      // effettua la richiesta POST
       final response = await http.post(
         Uri.parse(Constants.addressAuthenticationServer+Constants.requestLogin),
         headers: {'Content-Type': 'application/x-www-form-urlencoded',},
         body: body,
-      );
+      );// verifica lo stato della risposta
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
         _authenticationData = AuthenticationData.fromJson(data);
@@ -94,12 +108,14 @@ class Model {
     }
   }
 
+  // metodo per effettuare il logout dell'utente
   Future<bool> logOut() async {
     try{
       Map<String, String> params = {};
       _token = null;
       params["client_id"] = Constants.clientId;
       params["refresh_token"] = _authenticationData!.refreshToken;
+      // effettua la richiesta POST per il logout
       final response = await http.post(
         Uri.parse(Constants.addressAuthenticationServer+Constants.requestLogout),
         headers: {'Content-Type': 'application/x-www-form-urlencoded',},
@@ -112,6 +128,7 @@ class Model {
     }
   }
 
+  // metodo per recuperare una lista di fumetti
   Future<List<Comic>> getComics({int pageNumber = 0, int pageSize = 5, String sortBy = 'id',}) async {
     final Uri uri = Uri.parse('${Constants
         .addressStoreServer}/comic?pageNumber=$pageNumber&pageSize=$pageSize&sortBy=$sortBy');
@@ -131,6 +148,7 @@ class Model {
     }
   }
 
+  // metodo per recuperare una lista di fumetti filtrati per titolo
   Future<List<Comic>> getComicsByTitle(String title, {int pageNumber = 0, int pageSize = 5, String sortBy = 'id'}) async {
     final Uri uri = Uri.parse('${Constants.addressStoreServer}/comic/title?title=$title&pageNumber=$pageNumber&pageSize=$pageSize&sortBy=$sortBy');
     try {
@@ -149,6 +167,43 @@ class Model {
     }
   }
 
+  // metodo per filtrare i fumetti in base a vari criteri
+  Future<List<Comic>> filter({
+    String title = "", String author = "",
+    String publisher = "", String category = "",
+    int pageNumber = 0, int pageSize = 10, String sortBy = 'id',
+  }) async {
+    final Map<String, String> queryParams = {
+      'title': title,
+      'author': author,
+      'publisher': publisher,
+      'category': category,
+      'pageNumber': pageNumber.toString(),
+      'pageSize': pageSize.toString(),
+      'sortBy': sortBy,
+    };
+    final Uri uri = Uri.parse(
+        '${Constants.addressStoreServer}/comic/filter').replace(
+        queryParameters: queryParams);
+    try {
+      final response = await http.get(uri);
+      print(response);
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        List<Comic> comics = data.map((item) => Comic.fromJson(item)).toList();
+        return comics;
+      } else if (response.statusCode == 404) {
+        return [];
+      }
+      else {
+        throw Exception('Failed to load comics');
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  // metodo per recuperare il profilo dell'utente loggato
   Future<User> fetchUserProfile() async {
     final url = Uri.parse('${Constants.addressStoreServer}/profile');
     try {
@@ -172,6 +227,7 @@ class Model {
     }
   }
 
+  // metodo per recuperare la lista degli ordini dell'utente loggato
   Future<List<Order>> getUserOrders() async {
     final url = Uri.parse('${Constants.addressStoreServer}/profile/orders');
     try {
@@ -197,6 +253,7 @@ class Model {
     }
   }
 
+  // metodo per recuperare i dettagli del carrello dell'utente loggatto
   Future<List<CartDetail>> getCartDetails() async {
     final url = Uri.parse('${Constants.addressStoreServer}/profile/cart');
     try {
@@ -220,6 +277,7 @@ class Model {
     }
   }
 
+  // metodo per svuotare il carrello dell'utente loggato
   Future<void> clearCart() async {
     final url = Uri.parse('${Constants.addressStoreServer}/profile/cart');
     try {
@@ -237,6 +295,7 @@ class Model {
     }
   }
 
+  // metodo per rimuovere un elemento dal carrello dell'utente
   Future<void> removeItem(int itemId) async {
     final url = Uri.parse(
         '${Constants.addressStoreServer}/profile/cart/$itemId');
@@ -255,6 +314,7 @@ class Model {
     }
   }
 
+  // metodo per aggiornare la quantità di un elemento nel carrello dell'utente loggato
   Future<void> updateItemQuantity(int itemId, int quantity) async {
     final url = Uri.parse(
         '${Constants.addressStoreServer}/profile/cart/$itemId');
@@ -277,6 +337,7 @@ class Model {
     }
   }
 
+  // metodo per aggiungere un fumetto al carrello dell'utente loggato
   Future<void> addToCart(int comicId) async {
     final url = Uri.parse('${Constants.addressStoreServer}/profile/cart');
     final Map<String, String> body = {
@@ -298,6 +359,7 @@ class Model {
     }
   }
 
+  // metodo per effettuare il checkout del carrello
   Future<void> checkout(List<CartDetail> cartDetails) async {
     final url = Uri.parse("${Constants.addressStoreServer}/profile/cart/checkout");
 

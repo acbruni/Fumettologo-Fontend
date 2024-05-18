@@ -46,21 +46,6 @@ class _RegistrazioneState extends State<Registrazione> {
           ),
         ),
         iconTheme: IconThemeData(color: Colors.white70),
-        actions: [
-          Tooltip(
-            message: 'Login',
-            child: IconButton(
-              icon: Icon(Icons.login_outlined),
-              color: Colors.white70,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Login()),
-                );
-              },
-            ),
-          ),
-        ],
       ),
       body: Stack(
         children: [
@@ -121,7 +106,7 @@ class _RegistrazioneState extends State<Registrazione> {
                               const SizedBox(height: 15),
                               TextFormField(
                                 controller: lastNameController,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
                                   labelText: 'Cognome',
                                   hintText: 'Cognome',
@@ -133,7 +118,7 @@ class _RegistrazioneState extends State<Registrazione> {
                               const SizedBox(height: 15),
                               TextFormField(
                                 controller: addressController,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
                                   labelText: 'Indirizzo',
                                   hintText: 'Indirizzo',
@@ -152,7 +137,7 @@ class _RegistrazioneState extends State<Registrazione> {
                             children: [
                               TextFormField(
                                 controller: phoneController,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
                                   labelText: 'Telefono',
                                   hintText: 'Telefono',
@@ -164,7 +149,7 @@ class _RegistrazioneState extends State<Registrazione> {
                               const SizedBox(height: 15),
                               TextFormField(
                                 controller: emailController,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
                                   labelText: 'Email',
                                   hintText: 'Email',
@@ -223,7 +208,7 @@ class _RegistrazioneState extends State<Registrazione> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text(
-                                    'Registrazione effettuata con successo. Effettua il login cliccando l\'icona in alto a destra.'),
+                                    'Registrazione effettuata con successo. Effettua il login.'),
                               ),
                             );
                           } catch (e) {
@@ -244,6 +229,19 @@ class _RegistrazioneState extends State<Registrazione> {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 10),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => Login()),);
+                      },
+                      child: const Text(
+                        "Login",
+                        style: TextStyle(
+                          color: Color.fromRGBO(25, 25, 112, 1.0),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )
                   ],
                 ),
               ),

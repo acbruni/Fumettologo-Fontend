@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fumettologo_frontend/UI/pages/registrazione.dart';
 import '../../model/model.dart';
 import '../../model/objects/user.dart';
 import '../../model/supports/login_result.dart';
@@ -227,10 +228,23 @@ class _LoginState extends State<Login> {
                               });
                             },
                             child: const Text(
-                              "Accedi",
+                              "Login",
                               style: TextStyle(color: Colors.white70),
                             ),
                           ),
+                          const SizedBox(height: 10),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => Registrazione()),);
+                            },
+                            child: const Text(
+                              "Registrati",
+                              style: TextStyle(
+                                color: Color.fromRGBO(25, 25, 112, 1.0),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          )
                         ],
                       ),
                     ),
@@ -242,7 +256,7 @@ class _LoginState extends State<Login> {
                     child: Column(
                       children: [
                         SizedBox(height: 20),
-                        Text(
+                        const Text(
                           'I tuoi dati personali',
                           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                         ),
@@ -257,18 +271,18 @@ class _LoginState extends State<Login> {
                             children: [
                               ListTile(
                                 leading: Icon(Icons.person, color: Colors.blue),
-                                title: Text(
+                                title: const Text(
                                   'Nome e cognome',
                                   style: TextStyle(fontSize: 18),
                                 ),
                                 subtitle: Text(
                                   '${user?.firstName ?? ''} ${user?.lastName ?? ''}',
-                                  style: TextStyle(fontSize: 16),
+                                  style: const TextStyle(fontSize: 16),
                                 ),
                               ),
                               ListTile(
                                 leading: Icon(Icons.email, color: Colors.blue),
-                                title: Text(
+                                title: const Text(
                                   'Email',
                                   style: TextStyle(fontSize: 18),
                                 ),
@@ -279,7 +293,7 @@ class _LoginState extends State<Login> {
                               ),
                               ListTile(
                                 leading: Icon(Icons.phone, color: Colors.blue),
-                                title: Text(
+                                title: const Text(
                                   'Cellulare',
                                   style: TextStyle(fontSize: 18),
                                 ),
@@ -290,7 +304,7 @@ class _LoginState extends State<Login> {
                               ),
                               ListTile(
                                 leading: Icon(Icons.location_on, color: Colors.blue),
-                                title: Text(
+                                title: const Text(
                                   'Indirizzo',
                                   style: TextStyle(fontSize: 18),
                                 ),

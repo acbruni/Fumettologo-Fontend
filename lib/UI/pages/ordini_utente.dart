@@ -98,7 +98,7 @@ class _OrdiniUtenteState extends State<OrdiniUtente> {
                 return Card(
                   margin: const EdgeInsets.all(4.0),
                   child: ListTile(
-                    title: Text('ID Ordine: ${order.id}'),
+                    title: Text('Ordine: ${order.id}'),
                     subtitle: Text(
                         'Creato il: ${order.createTime.day}/${order.createTime.month}/${order.createTime.year}'),
                     trailing: Text(
